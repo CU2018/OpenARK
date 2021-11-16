@@ -297,7 +297,7 @@ namespace ark{
             //Add timesync data to timesync file
             std::ofstream kf_T;
             kf_T.open(dir+std::to_string(frameId_)+"_T.csv");
-            Eigen::Matrix4d T = T_WS();
+            Eigen::Matrix4d T = T_WC(3);
             kf_T << T(0,0) << "," << T(0,1) << "," <<  T(0,2) << "," << T(0,3)
             << "," << T(1,0) << "," << T(1,1) << "," <<  T(1,2) << "," << T(1,3)
             << "," << T(2,0) << "," << T(2,1) << "," <<  T(2,2) << "," << T(2,3)

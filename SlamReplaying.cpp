@@ -82,8 +82,8 @@ int main(int argc, char **argv)
     traj_win.set_pos(640 * 2.5, 100);
     ar_win.set_pos(0, 100);
     std::map<int, MyGUI::Path *> pathMap;
-    MyGUI::Axis axis1("axis1", .1);
-    MyGUI::Axis axis2("axis2", 1);
+    MyGUI::Axis axis1("axis1", .1); // origin position axis
+    MyGUI::Axis axis2("axis2", 1); // camera axis
     MyGUI::Grid grid1("grid1", 10, 1);
     traj_win.add_object(&axis1);
     traj_win.add_object(&axis2);
@@ -114,6 +114,8 @@ int main(int argc, char **argv)
         }
         pathMap[mapIndex]->add_node(transform.translation());
         axis2.set_transform(transform);
+		//Eigen::Affine3d pose = axis2.get_pose();
+		//std::cout << "handler: axis2.pos: " << pose.matrix() << std::endl;
         ar_win.set_camera(transform);
         ar_win.set_image(frame->images_[3]);
         if (ar_win.clicked())
@@ -134,7 +136,7 @@ int main(int argc, char **argv)
     KeyFrameAvailableHandler kfHandler([](MultiCameraFrame::Ptr frame) {
         frame->saveSimple("map_images/");
     });
-    //slam.AddKeyFrameAvailableHandler(kfHandler, "saving");
+    slam.AddKeyFrameAvailableHandler(kfHandler, "saving");
 
     LoopClosureDetectedHandler loopHandler([&](void) {
         std::vector<Eigen::Matrix4d> traj;

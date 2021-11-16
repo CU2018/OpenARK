@@ -7,16 +7,16 @@ cameras:
       image_dimension: [ 640, 480 ]
       distortion_type: radialtangential
       distortion_coefficients: [ 0., 0., 0., 0. ]
-      focal_length: [ 3.84871613e+02, 3.84871613e+02 ]
-      principal_point: [ 3.18041687e+02, 2.42361450e+02 ]
+      focal_length: [ 3.83738525e+02, 3.83738525e+02 ]
+      principal_point: [ 3.19075897e+02, 2.38199295e+02 ]
    -
-      T_SC: [ 1., 0., 0., 4.45947275e-02, 0., 1., 0., 5.10000018e-03, 0.,
+      T_SC: [ 1., 0., 0., 4.44840156e-02, 0., 1., 0., 5.10000018e-03, 0.,
           0., 1., 1.17400000e-02, 0., 0., 0., 1. ]
       image_dimension: [ 640, 480 ]
       distortion_type: radialtangential
       distortion_coefficients: [ 0., 0., 0., 0. ]
-      focal_length: [ 3.84871613e+02, 3.84871613e+02 ]
-      principal_point: [ 3.18041687e+02, 2.42361450e+02 ]
+      focal_length: [ 3.83738525e+02, 3.83738525e+02 ]
+      principal_point: [ 3.19075897e+02, 2.38199295e+02 ]
 additional_cameras:
    -
       T_SC: [ 1., 0., 0., -5.52000012e-03, 0., 1., 0., 5.10000018e-03,
@@ -24,18 +24,18 @@ additional_cameras:
       image_dimension: [ 640, 480 ]
       distortion_type: radialtangential
       distortion_coefficients: [ 0., 0., 0., 0. ]
-      focal_length: [ 3.84871613e+02, 3.84871613e+02 ]
-      principal_point: [ 3.18041687e+02, 2.42361450e+02 ]
+      focal_length: [ 3.83738525e+02, 3.83738525e+02 ]
+      principal_point: [ 3.19075897e+02, 2.38199295e+02 ]
    -
-      T_SC: [ 9.99995828e-01, -2.04235502e-03, 2.03182618e-03,
-          -2.03002170e-02, 2.05474463e-03, 9.99979198e-01,
-          -6.11450057e-03, 4.81690234e-03, -2.01929593e-03,
-          6.11865008e-03, 9.99979258e-01, 1.12155052e-02, 0., 0., 0., 1. ]
+      T_SC: [ 9.99972463e-01, 5.48230018e-03, -5.00694616e-03,
+          -2.02134512e-02, -5.49744349e-03, 9.99980330e-01,
+          -3.01576243e-03, 4.76061832e-03, 4.99031460e-03,
+          3.04320455e-03, 9.99982893e-01, 1.14907240e-02, 0., 0., 0., 1. ]
       image_dimension: [ 640, 480 ]
       distortion_type: radialtangential
       distortion_coefficients: [ 0., 0., 0., 0. ]
-      focal_length: [ 6.14324219e+02, 6.14504028e+02 ]
-      principal_point: [ 3.24596283e+02, 2.38833847e+02 ]
+      focal_length: [ 6.08194214e+02, 6.08437500e+02 ]
+      principal_point: [ 3.16390839e+02, 2.45571350e+02 ]
 camera_params:
    camera_rate: 30
    sigma_absolute_translation: 0.
@@ -72,9 +72,6 @@ imageDelay: 0.
 displayImages: false
 useDriver: false
 enableLoopClosureDetection: 1
-# numKeypointsResetThreshold: 10
-# durationResetThreshold: 0.5
-emitterPower: 1.
 Recon_VoxelSize: 1.0000000000000000e-02
 Recon_BlockSize: 2.
 Recon_MaxDepth: 2.

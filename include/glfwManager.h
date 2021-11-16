@@ -307,6 +307,9 @@ public:
 
 	}
 
+	//Eigen::Affine3d get_pose() {
+	//	return this->pose;
+	//}
 };
 
 class Path : public Object {
