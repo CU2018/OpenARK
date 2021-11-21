@@ -118,12 +118,12 @@ int main(int argc, char **argv)
             const auto &infrared = frame->images_[0];
             const auto &infrared2 = frame->images_[1];
             const auto &depth = frame->images_[4];
-            //const auto &rgb = frame->images_[3];
+            const auto &rgb = frame->images_[3];
 
             saveImg(frameId, infrared, infrared_path);
             saveImg(frameId, infrared2, infrared2_path);
             saveImg(frameId, depth, depth_path);
-            //saveImg(frameId, rgb, rgb_path);
+            saveImg(frameId, rgb, rgb_path);
 
             timestamp_ofs << frameId << " " << std::setprecision(15) << frame->timestamp_ << "\n";
             if(!quit)
