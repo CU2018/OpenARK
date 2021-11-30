@@ -328,17 +328,27 @@ void ARCameraWindow::set_image(cv::Mat image_in){
 
 void ARCameraWindow::keyboard_control()
 {
-  if(glfwGetKey(win_ptr, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-    glfwSetWindowShouldClose(win_ptr, GL_TRUE);
-  if(glfwGetMouseButton(win_ptr, GLFW_MOUSE_BUTTON_LEFT)==GLFW_PRESS){
-    clicked_=true;
-  }
+	if (glfwGetKey(win_ptr, GLFW_KEY_R) == GLFW_PRESS || glfwGetMouseButton(win_ptr, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS) {
+		std::cout << "Pressing R for create error measure marker" << std::endl;
+		rPressed_ = true;
+	}
+	if(glfwGetKey(win_ptr, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+		glfwSetWindowShouldClose(win_ptr, GL_TRUE);
+	if(glfwGetMouseButton(win_ptr, GLFW_MOUSE_BUTTON_LEFT)==GLFW_PRESS){
+		clicked_=true;
+	}
 }
 
 bool ARCameraWindow::clicked(){
     bool clicked = clicked_;
     clicked_ = false;
     return clicked;
+}
+
+bool ARCameraWindow::rPressed() {
+	bool rIsPressed = rPressed_;
+	rPressed_ = false;
+	return rIsPressed;
 }
 
 Eigen::Affine3d ARCameraWindow::cam_extr(){

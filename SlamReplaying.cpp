@@ -19,6 +19,34 @@ void signal_handler(int signum)
     exit(signum);
 }
 
+
+// https://learnopencv.com/rotation-matrix-to-euler-angles/
+// Calculates rotation matrix to euler angles
+// The result is the same as MATLAB except the order
+// of the euler angles ( x and z are swapped ).
+Eigen::Vector3d rotationMatrixToEulerAngles(Eigen::Matrix3d &R)
+{
+	float sy = sqrt(R(0, 0) * R(0, 0) + R(1, 0) * R(1, 0));
+
+	bool singular = sy < 1e-6; // If
+
+	double x, y, z;
+	if (!singular)
+	{
+		x = atan2(R(2, 1), R(2, 2));
+		y = atan2(-R(2, 0), sy);
+		z = atan2(R(1, 0), R(0, 0));
+	}
+	else
+	{
+		x = atan2(-R(1, 2), R(1, 1));
+		y = atan2(-R(2, 0), sy);
+		z = 0;
+	}
+	return Eigen::Vector3d(x, y, z);
+
+}
+
 int main(int argc, char **argv)
 {
     std::signal(SIGINT, signal_handler);
@@ -90,8 +118,11 @@ int main(int argc, char **argv)
     traj_win.add_object(&grid1);
     ar_win.add_object(&axis1);
     std::vector<MyGUI::Object *> cubes;
+	std::vector<MyGUI::Object *> errorCubes; // cubes created for measure error
     std::vector<Eigen::Matrix4d> T_K_cubes;
     std::vector<MapKeyFrame::Ptr> K_cubes;
+	// vector for saving camera T_WC info for measuring error
+	std::vector<Eigen::Matrix4d, Eigen::aligned_allocator<Eigen::Matrix4d>> T_vectors;
 
     const bool hideInactiveMaps = true;
 
@@ -120,7 +151,6 @@ int main(int argc, char **argv)
         ar_win.set_image(frame->images_[3]);
         if (ar_win.clicked())
         {
-
             std::string cube_name = std::string("CubeNum") + std::to_string(cubes.size());
             MyGUI::Object *obj = new MyGUI::Cube(cube_name, 0.1, 0.1, 0.1);
             obj->set_transform(transform);
@@ -129,14 +159,31 @@ int main(int argc, char **argv)
             K_cubes.push_back(frame->keyframe_);
             std::cout << "Adding cube " << cube_name << std::endl;
             ar_win.add_object(obj); //NOTE: this is bad, should change objects to shared_ptr
+			//frame->saveSimple("map_images/");
+			//T_vectors.push_back(frame->getTransformMatrix());
+			//std::cout << "Saving transformation matrix..." << std::endl;
         }
+		if (ar_win.rPressed()) 
+		{
+			std::string cube_name = std::string("MarkerCube") + std::to_string(errorCubes.size());
+			MyGUI::Object *obj = new MyGUI::Cube(cube_name, 0.05, 0.05, 0.05);
+			obj->set_transform(transform);
+			errorCubes.push_back(obj);
+			T_K_cubes.push_back(frame->T_KS_);
+			K_cubes.push_back(frame->keyframe_);
+			std::cout << "Adding cube " << cube_name << std::endl;
+			ar_win.add_object(obj); //NOTE: this is bad, should change objects to shared_ptr
+			frame->saveSimple("map_images/");
+			T_vectors.push_back(frame->getTransformMatrix());
+			std::cout << "Saving transformation matrix..." << std::endl;
+		}
     });
     slam.AddFrameAvailableHandler(handler, "mapping");
 
     KeyFrameAvailableHandler kfHandler([](MultiCameraFrame::Ptr frame) {
         frame->saveSimple("map_images/");
     });
-    slam.AddKeyFrameAvailableHandler(kfHandler, "saving");
+    //slam.AddKeyFrameAvailableHandler(kfHandler, "saving");
 
     LoopClosureDetectedHandler loopHandler([&](void) {
         std::vector<Eigen::Matrix4d> traj;
@@ -228,6 +275,31 @@ int main(int argc, char **argv)
         if (k == 'q' || k == 'Q' || k == 27)
             break; // 27 is ESC
     }
+	Eigen::Matrix4d startPose = T_vectors[0];
+	Eigen::Matrix4d endPose = T_vectors[T_vectors.size() - 1];
+	//double rotation_err = \
+	//	(startPose(0, 0) - endPose(0, 0)) * (startPose(0, 0) - endPose(0, 0)) + (startPose(0, 1) - endPose(0, 1)) * (startPose(0, 1) - endPose(0, 1)) + (startPose(0, 2) - endPose(0, 2)) * (startPose(0, 2) - endPose(0, 2)) +
+	//	(startPose(1, 0) - endPose(1, 0)) * (startPose(1, 0) - endPose(1, 0)) + (startPose(1, 1) - endPose(1, 1)) * (startPose(1, 1) - endPose(1, 1)) + (startPose(1, 2) - endPose(1, 2)) * (startPose(1, 2) - endPose(1, 2)) + 
+	//	(startPose(2, 0) - endPose(2, 0)) * (startPose(2, 0) - endPose(2, 0)) + (startPose(2, 1) - endPose(2, 1)) * (startPose(2, 1) - endPose(2, 1)) + (startPose(2, 2) - endPose(2, 2)) * (startPose(2, 2) - endPose(2, 2));
+	//rotation_err = sqrt(rotation_err);
+	//double translation_err = (startPose(0, 3) - endPose(0, 3)) * (startPose(0, 3) - endPose(0, 3)) + (startPose(1, 3) - endPose(1, 3)) * (startPose(1, 3) - endPose(1, 3)) + (startPose(2, 3) - endPose(2, 3)) * (startPose(2, 3) - endPose(2, 3));
+	//translation_err = sqrt(translation_err);
+	//std::cout << "The rotation error is " << rotation_err << std::endl;
+	//std::cout << "The translation error is " << translation_err << std::endl;
+	//std::cout << "-------------------------------------" << std::endl;
+	Eigen::Matrix3d R1 = startPose.block<3, 3>(0, 0);
+	Eigen::Matrix3d R2 = endPose.block<3, 3>(0, 0);
+	R2.transposeInPlace();
+	Eigen::Matrix3d residualR = R1 * R2;
+	Eigen::Vector3d eulerAngleR = rotationMatrixToEulerAngles(residualR);
+	Eigen::Matrix4d diffPose = endPose - startPose;
+	double rotation_err_eigen = residualR.norm();
+	double translation_err_eigen = diffPose.col(3).norm();
+	std::cout << "------------------------------------- Evaluation -------------------------------" << std::endl;
+	std::cout << "The euler angle (degree) rotation error is: x: " << eulerAngleR.x() * (180 / M_PI) << "; y: " << eulerAngleR.y() * (180 / M_PI) << "; z: " << eulerAngleR.z() * (180 / M_PI) << std::endl;
+	std::cout << "The rotation residual matrix is \n" << residualR << std::endl;
+	// std::cout << "The rotation residual frobenius norm is " << rotation_err_eigen << std::endl;
+	std::cout << "The eigen translation error is " << translation_err_eigen << std::endl;
     printf("\nTerminate...\n");
     // Clean up
     slam.ShutDown();

@@ -120,6 +120,7 @@ public:
 		proj_mat_(2,3)=2*far_cut*near_cut/(near_cut-far_cut);
 		proj_mat_(3,2)=-1;
 		clicked_=false;
+		rPressed_ = false;
 		glfwSetInputMode(win_ptr, GLFW_STICKY_MOUSE_BUTTONS, 1);
 	}
 
@@ -136,6 +137,8 @@ public:
 
 	bool clicked();
 
+	bool rPressed();  // function for detecting error check marker
+
 	Eigen::Affine3d cam_extr();
 
 
@@ -151,8 +154,13 @@ private:
 	double far_cut_;
 	double px_,py_,cx_,cy_;
 	std::atomic<bool> clicked_;
+	std::atomic<bool> rPressed_;  // flag for detecting measure error
 
 
+	// function for create a cube indicating the start timestamp / frame and the end for measuring error
+	void createErrorCube() {
+		;
+	}
 
 
 };
